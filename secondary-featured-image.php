@@ -19,13 +19,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Secondary Featured Image. If not, see https://www.gnu.org/licenses/gpl-3.0.html.
 */
-
 // Prevent direct file access
-
 defined('ABSPATH') or exit;
 define('SECONDARY_FEATURED_IMAGE_SLUG', 'secondary-featured-image');
 define('SECONDARY_FEATURED_IMAGE_VERSION', '1.0.0');
-
 if (!class_exists('Secondary_Featured_Image')):
 	/**
 	 * The Secondary Featured Image - Class
@@ -41,22 +38,19 @@ if (!class_exists('Secondary_Featured_Image')):
 		 *
 		 * @since 1.0.0
 		 */
-		public static
+		public static function instance()
 
-		function instance()
 		{
 			if (is_null(self::$_instance)) self::$_instance = new self();
 			return self::$_instance;
 		}
-
 		/**
 		 * Setup class
 		 *
 		 * @since 1.0.0
 		 */
-		public
+		public function __construct()
 
-		function __construct()
 		{
 			define('SECONDARY_FEATURED_IMAGE_BASENAME', plugin_basename(__FILE__));
 			define('SECONDARY_FEATURED_IMAGE_ADMIN_ASSETS_URL', esc_url(trailingslashit(plugins_url('admin/', SECONDARY_FEATURED_IMAGE_BASENAME))));
@@ -73,66 +67,56 @@ if (!class_exists('Secondary_Featured_Image')):
 				'save_meta_box'
 			) , 10, 1);
 		}
-
 		/**
 		 * Cloning instances of this class is forbidden.
 		 *
 		 * @since 1.0.0
 		 */
-		protected
-		function __clone()
+		protected function __clone()
 		{
 			_doing_it_wrong(__FUNCTION__, __('Cloning instances of this class is forbidden.', 'secondary-featured-image') , SECONDARY_FEATURED_IMAGE_VERSION);
 		}
-
 		/**
 		 * Unserializing instances of this class is forbidden.
 		 *
 		 * @since 1.0.0
 		 */
-		public
+		public function __wakeup()
 
-		function __wakeup()
 		{
 			_doing_it_wrong(__FUNCTION__, __('Unserializing instances of this class is forbidden.', 'secondary-featured-image') , SECONDARY_FEATURED_IMAGE_VERSION);
 		}
-
 		/**
 		 * Log the plugin version number.
 		 *
 		 * @since 1.0.0
 		 */
-		public
+		public function _log_version_number()
 
-		function _log_version_number()
 		{
 			update_option(SECONDARY_FEATURED_IMAGE_SLUG . '-version', SECONDARY_FEATURED_IMAGE_VERSION);
 		}
-
 		/**
 		 * Enqueue scripts and styles.
 		 *
 		 * @see   https://codex.wordpress.org/Plugin_API/Action_Reference/admin_enqueue_scripts
 		 * @since 1.0.0
 		 */
-		public
+		public function enqueue_admin($hook)
 
-		function enqueue_admin($hook)
 		{
 			wp_enqueue_script('secondary-featured-image-admin-scripts', SECONDARY_FEATURED_IMAGE_ADMIN_ASSETS_URL . '/js/scripts.js', array(
 				'jquery'
 			) , SECONDARY_FEATURED_IMAGE_VERSION, true);
 		}
-
 		/**
 		 * Register secondary featured image metabox.
 		 *
 		 * @link 	 https://developer.wordpress.org/reference/functions/add_meta_box/
 		 * @since    1.0.0
 		 */
-		public
+		public function add_meta_box()
 
-		function add_meta_box()
 		{
 			$post_types = apply_filters('secondary_featured_image_post_types', array(
 				'post',
@@ -146,7 +130,6 @@ if (!class_exists('Secondary_Featured_Image')):
 				) , $post_type, 'side', 'low');
 			endforeach;
 		}
-
 		/**
 		 * Function that displays the secondary featured image metabox with
 		 * the desired WordPress media uploader as part of the larger edit post/page.
@@ -154,9 +137,8 @@ if (!class_exists('Secondary_Featured_Image')):
 		 * @link 	 https://developer.wordpress.org/reference/functions/add_meta_box/#parameters
 		 * @since    1.0.0
 		 */
-		public
+		public function meta_box_html($post)
 
-		function meta_box_html($post)
 		{
 			global $content_width, $_wp_additional_image_sizes;
 			$image_id = get_post_meta($post->ID, '_secondary_featured_image_id', true);
@@ -184,16 +166,14 @@ if (!class_exists('Secondary_Featured_Image')):
 			endif;
 			echo $content;
 		}
-
 		/**
 		 * Action which triggers whenever a post or (custom) page is created or updated.
 		 *
 		 * @link 	 https://codex.wordpress.org/Plugin_API/Action_Reference/save_post
 		 * @since    1.0.0
 		 */
-		public
+		public function save_meta_box($post_id)
 
-		function save_meta_box($post_id)
 		{
 			if (isset($_POST['_secondary_featured_cover_image'])):
 				$image_id = (int)$_POST['_secondary_featured_cover_image'];
@@ -201,7 +181,6 @@ if (!class_exists('Secondary_Featured_Image')):
 			endif;
 		}
 	}
-
 endif;
 /**
  * Returns the main instance of The Secondary Featured Image.
@@ -209,20 +188,18 @@ endif;
  *
  * @since 1.0.0
  */
-
 if (!function_exists('secondary_featured_image_initialization')):
 	function secondary_featured_image_initialization()
 	{
 		return Secondary_Featured_Image::instance();
 	}
-
 	secondary_featured_image_initialization();
 endif;
 /**
  *  Get the image on the front of the page.
- *  
+ *
  *	$image_id = get_post_meta($post_id, '_secondary_featured_image_id', true);
  *	echo wp_get_attachment_image($image_id, 'post-thumbnail', array(
- * 		'class' => 'img-responsive'		
+ * 		'class' => 'img-responsive'
  *  ));
  */
